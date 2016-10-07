@@ -104,7 +104,7 @@ class OpsManager
 
       def get_diagnostic_report
         authenticated_get("/api/v0/diagnostic_report")
-      rescue Errno::ETIMEDOUT , Errno::EHOSTUNREACH, Net::HTTPFatalError, Net::OpenTimeout
+      rescue Errno::ETIMEDOUT , Errno::EHOSTUNREACH, Net::HTTPFatalError, Net::OpenTimeout, CF::UAA::BadTarget, SocketError
         nil
       end
 
@@ -127,14 +127,14 @@ class OpsManager
       end
 
       def target
-        @target ||= OpsManager.get_conf(:target)
+        @target = OpsManager.get_conf(:target)
       end
 
       def get_token
         token_issuer.owner_password_grant(username, password, 'opsman.admin').tap do |token|
           logger.info "UAA Token: #{token.inspect}"
         end
-      rescue  CF::UAA::TargetError
+      rescue  CF::UAA::TargetError, CF::UAA::BadTarget
         nil
       end
 
@@ -146,7 +146,8 @@ class OpsManager
       end
 
       def access_token
-        @access_token ||= get_token.info['access_token']
+        token = get_token
+        @access_token ||= token ? token.info['access_token'] : nil
       end
 
       def authorization_header

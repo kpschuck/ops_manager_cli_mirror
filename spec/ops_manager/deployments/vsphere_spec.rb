@@ -46,7 +46,7 @@ describe OpsManager::Deployments::Vsphere do
         before { config.opts['vcenter'][m] = "domain\\vcenter_#{m}" }
 
         it "should URL encode the #{m}" do
-          expect(vsphere).to receive(:`).with(/domain%5Cvcenter_#{m}/)
+          expect(vsphere).to receive(:`).with(/domain\\%5Cvcenter_#{m}/)
           deploy_vm
         end
       end

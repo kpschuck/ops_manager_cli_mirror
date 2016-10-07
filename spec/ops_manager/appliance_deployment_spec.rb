@@ -37,6 +37,8 @@ describe OpsManager::ApplianceDeployment do
     allow(appliance_deployment).to receive(:current_version).and_return(current_version)
     allow(appliance_deployment).to receive(:config).and_return(config)
     allow(appliance_deployment).to receive(:parsed_installation_settings).and_return({})
+    allow(config).to receive(:has_key?).and_return(false) # ensures that ip is used for the actualTarget
+                                                          # TODO: test both conditions, where ip is used and where hostname is used
   end
 
   describe 'initialize' do

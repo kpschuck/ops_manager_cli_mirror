@@ -29,6 +29,9 @@ class OpsManager::ApplianceDeployment
     when current_version.empty?
       puts "No OpsManager deployed at #{config.ip}. Deploying ...".green
       deploy
+      if config.has_key?('hostname') then
+        OpsManager.set_conf(:target, config.hostname)
+      end
       create_first_user
     when current_version < desired_version then
       puts "OpsManager at #{config.ip} version is #{current_version}. Upgrading to #{desired_version}.../".green
